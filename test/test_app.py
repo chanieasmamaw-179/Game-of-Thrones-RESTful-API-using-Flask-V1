@@ -10,45 +10,48 @@ if not hasattr(werkzeug, "__version__"):
 
 @pytest.fixture(scope='module')
 def test_client():
+    # Configure app for testing
     app.config['TESTING'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    # Set up the app context and create tables
     with app.app_context():
         db.create_all()
 
+    # Yield the test client
     with app.test_client() as testing_client:
         yield testing_client
-        with app.app_context():
-            db.session.remove()
-            db.drop_all()
 
-
+    # Clean up database after tests are done
+    with app.app_context():
+        db.session.remove()
+        db.drop_all()
 
 @pytest.fixture(scope='function')
 def init_database():
+    # Initialize the database with sample data
     db.session.add(Character(name="Jon Snow", house="Stark", role="Lord Commander", age=30))
     db.session.add(Character(name="Daenerys Targaryen", house="Targaryen", role="Queen", age=25))
     db.session.commit()
 
     yield
 
+    # Clean up after each test function
     db.session.remove()
-    db.drop_all()
-
 
 def test_home_route(test_client):
     response = test_client.get('/')
     assert response.status_code == 200
     assert b"Welcome to the Game of Thrones Flask API!" in response.data
 
-
 def test_list_characters(test_client, init_database):
-    response = test_client.get('/characters/list')
+    response = test_client.get('/cha')
     assert response.status_code == 200
     data = response.get_json()
     assert "total" in data
     assert data["total"] == 2
+
 
 """
 def test_fetch_character_by_id(test_client, init_database):

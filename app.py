@@ -168,4 +168,4 @@ def delete_character(args, character_id):
 if __name__ == "__main__":
     with app.app_context():
         Base.metadata.create_all(bind=engine)  # Ensure tables are created
-    app.run(debug=False, host='0.0.0.0', port=8087)
+    app.run(debug=True, host='0.0.0.0', port=8087)

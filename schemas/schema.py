@@ -54,7 +54,7 @@ class UserSchema(Schema):
     id = fields.Integer(dump_only=True)  # ID is read-only
     name = fields.String(required=True, validate=validate.Length(min=1))
     house = fields.String(required=True, validate=validate.Length(min=1))
-    animal = fields.String(required=True, validate=validate.Length(min=1))
+    animal = fields.String(required=False, validate=validate.Length(min=1))
     symbol = fields.String(required=True, validate=validate.Length(min=1))
     nickname = fields.String(required=True, validate=validate.Length(min=1))
     role = fields.String(required=True, validate=validate.Length(min=1))

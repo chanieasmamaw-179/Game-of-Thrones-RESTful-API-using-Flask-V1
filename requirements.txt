@@ -1,4 +1,4 @@
-flask
+Flask>=3.0.0
 flask_migrate
 flask-restful
 flask-paginate
@@ -12,7 +12,6 @@ flask_sqlalchemy
 flask-swagger-ui
 mysqlclient
 python-dotenv
-Flask==2.3.2
 apifairy==0.9.0
 passlib
 PyJWT
