@@ -1,5 +1,8 @@
 from marshmallow import Schema, fields, ValidationError, validate, validates_schema
 import re
+from flask_sqlalchemy import SQLAlchemy
+from passlib.context import CryptContext
+from config.database import db, init_db
 
 
 # Custom password validator
@@ -51,16 +54,16 @@ class CharacterSchema(Schema):
 
 # Schema for user-related data
 class UserSchema(Schema):
-    id = fields.Integer(dump_only=True)  # ID is read-only
-    name = fields.String(required=True, validate=validate.Length(min=1))
-    house = fields.String(required=True, validate=validate.Length(min=1))
-    animal = fields.String(required=False, validate=validate.Length(min=1))
-    symbol = fields.String(required=True, validate=validate.Length(min=1))
-    nickname = fields.String(required=True, validate=validate.Length(min=1))
-    role = fields.String(required=True, validate=validate.Length(min=1))
-    age = fields.Integer(required=True, validate=validate.Range(min=0))
-    death = fields.Integer(required=False, validate=validate.Range(min=0))
-    strength = fields.String(required=True, validate=validate.Length(min=1))
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=False)
+    house = fields.String(required=False)
+    animal = fields.String(required=False)
+    symbol = fields.String(required=False)
+    nickname = fields.String(required=False)
+    role = fields.String(required=False)
+    age = fields.Integer(required=False)
+    death = fields.Integer(required=False)
+    strength = fields.String(required=False)
 
 
 # Schema for user deletion (without full data)
@@ -107,3 +110,13 @@ characters_schema = CharacterSchema(many=True)
 class LoginSchema(Schema):
     email = fields.Email(required=True, description="User's email")
     password = fields.String(required=True, description="User's password")
+
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)

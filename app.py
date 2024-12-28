@@ -115,9 +115,17 @@ def sort_characters(args):
     reverse_order = args["sort_order"] == "desc"
 
     characters = Character.query.all()
+
+    # Define a function for safe attribute access and handling None values
+    def safe_getattr(character, key):
+        value = getattr(character, key)
+        if isinstance(value, str):
+            return value.lower() if value is not None else ""  # Default to empty string if None
+        return value if value is not None else ""  # Default to empty string if None for non-string types
+
     sorted_characters = sorted(
         characters,
-        key=lambda x: getattr(x, sort_key).lower() if isinstance(getattr(x, sort_key), str) else getattr(x, sort_key),
+        key=lambda x: safe_getattr(x, sort_key),  # Use safe_getattr for comparison
         reverse=reverse_order
     )
 
@@ -126,18 +134,21 @@ def sort_characters(args):
         "data": [character.to_dict() for character in sorted_characters]
     })
 
+
 # Feature 5: Add a new character to the list
 @app.route("/add/create-new-characters", methods=["POST"])
 @arguments(UserSchema)
 def create_character(args):
+    print("Incoming JSON data:", args)  # Log parsed arguments
     new_character = Character(**args)
     db.session.add(new_character)
     db.session.commit()
 
+    print("Saved character:", new_character.to_dict())  # Log the saved character
     return jsonify(new_character.to_dict()), 201
 
 # Feature 6: Edit a character
-@app.route("/Edit-characters/<int:character_id>", methods=["PUT"])
+@app.route("/update-character/<int:character_id>", methods=["PUT"])
 @arguments(UserSchema)
 def update_character(args, character_id):
     character = Character.query.get(character_id)
@@ -153,8 +164,8 @@ def update_character(args, character_id):
 
 # Feature 7: Delete a character
 @app.route("/delete-characters/<int:character_id>", methods=["DELETE"])
-@arguments(UserSchemaDeletion, location="query")
-def delete_character(args, character_id):
+@arguments(UserSchemaDeletion, location="query") #if I use this argument , add "arg" in side function
+def delete_character(arg,  character_id):
     character = Character.query.get(character_id)
     if not character:
         return jsonify({"error": f"Character with ID {character_id} not found"}), 404

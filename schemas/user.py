@@ -1,3 +1,5 @@
+
+"""
 from flask_sqlalchemy import SQLAlchemy
 from passlib.context import CryptContext
 from config.database import db, init_db
@@ -14,3 +16,4 @@ class User(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+"""

@@ -8,7 +8,7 @@ import jwt
 from sqlalchemy.exc import IntegrityError
 from config.database import db
 from schemas.schema import RegisterSchema, TokenResponseSchema
-from schemas.user import User
+from schemas.schema import User
 
 # Blueprint Initialization
 auth_blueprint = Blueprint('auth', __name__)
