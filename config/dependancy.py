@@ -1,8 +1,12 @@
+"""Logging setup and Flask database session management."""
 import logging
 from flask import g
-from sqlalchemy.orm import Session
-from config.database import SessionLocal
 
+# SQLAlchemy imports for session management
+from sqlalchemy.orm import Session
+
+# Local database session import from the configuration
+from config.database import SessionLocal
 
 
 
@@ -34,7 +38,7 @@ def close_db(error=None):
         try:
             if error:
                 db.rollback()  # Roll back any pending transaction in case of an error
-            db.close()  # Close the session
+            db.close()
         except Exception as e:
             logger.error("Error closing the database session: %s", str(e))
 

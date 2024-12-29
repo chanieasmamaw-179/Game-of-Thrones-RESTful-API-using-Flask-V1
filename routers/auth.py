@@ -1,14 +1,17 @@
+# Standard library imports
 import logging
 import os
 from datetime import datetime, timedelta
+# Flask imports for handling routes and requests
 from flask import Blueprint, request, jsonify
+# Third-party imports
 from apifairy import arguments
 from passlib.context import CryptContext
 import jwt
 from sqlalchemy.exc import IntegrityError
+# Local imports for database setup and schemas
 from config.database import db
-from schemas.schema import RegisterSchema, TokenResponseSchema
-from schemas.schema import User
+from schemas.schema import RegisterSchema, TokenResponseSchema, User
 
 # Blueprint Initialization
 auth_blueprint = Blueprint('auth', __name__)
@@ -25,15 +28,23 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 180))
 # Security settings
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 def create_access_token(data, expires_delta=None):
+    """
+    Creates a JWT access token with the specified data and expiration time.
+    """
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+
 @auth_blueprint.route('/auth/register', methods=['POST'])
 @arguments(RegisterSchema)
 def register_user(args):
+    """
+    Registers a new user by accepting a POST request with user details.
+    """
     try:
         if args["password"] != args["confirm_password"]:
             return jsonify({"error": "Passwords do not match"}), 400
@@ -52,9 +63,13 @@ def register_user(args):
         logger.error(f"Registration error: {e}")
         return jsonify({"error": "An internal error occurred"}), 500
 
+
 @auth_blueprint.route("/auth/token", methods=["POST"])
 @arguments(TokenResponseSchema)
 def login(args):
+    """
+     Authenticates a user and returns a JWT access token.
+     """
     user = User.query.filter_by(email=args["email"]).first()
 
     if not user or not bcrypt_context.verify(args["password"], user.password):

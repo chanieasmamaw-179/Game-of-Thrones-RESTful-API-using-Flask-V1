@@ -4,6 +4,9 @@ from config.database import db
 
 
 class Character(db.Model):
+    """
+    Represents a character in the Game of Thrones database.
+    """
     __tablename__ = 'characters'  # Explicitly defining table name
 
     id = db.Column(db.Integer, primary_key=True)
@@ -21,6 +24,9 @@ class Character(db.Model):
         return f"<Character {self.name} (House: {self.house})>"
 
     def to_dict(self):
+        """
+            Converts the Character object to a dictionary format.
+        """
         return {
             "id": self.id,
             "name": self.name,

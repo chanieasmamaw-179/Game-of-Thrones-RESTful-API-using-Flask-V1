@@ -1,14 +1,17 @@
+
+"""SQLAlchemy and Flask imports for database setup"""
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from flask_sqlalchemy import SQLAlchemy
+# Standard library imports
 import os
 
 
 
-
 # Database URI
-SQLALCHEMY_DATABASE_URL = 'sqlite:///./sqlite_database.db'  # SQLite URI for local database
+SQLALCHEMY_DATABASE_URL = 'sqlite:///./sqlite_database.db'  # SQLite URI for mock database
 
 # Initialize the SQLAlchemy engine and session maker
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})

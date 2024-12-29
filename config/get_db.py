@@ -1,3 +1,6 @@
+"""
+Flask and SQLAlchemy imports for creating the application and interacting with the database
+"""
 from flask import Flask, jsonify
 from sqlalchemy.orm import Session
 from config.database import Base, engine
@@ -13,6 +16,8 @@ app = Flask(__name__)
 def get_characters():
     """
     Fetch characters from the database.
+    Returns:
+        jsonify: A JSON response containing a list of characters.
     """
     db: Session = get_db()  # Get the database session
     characters = db.query(Character).all()  # Query the database
