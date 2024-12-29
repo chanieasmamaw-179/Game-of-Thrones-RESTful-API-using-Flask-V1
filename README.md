@@ -118,7 +118,7 @@ Database
 This application uses PostgreSQL as its database.
 License
 
-This project is licensed under the MIT License.
+This project is licensed under the webeet.io. License.
 Author
 
 Asmamaw Chanie Yehun
