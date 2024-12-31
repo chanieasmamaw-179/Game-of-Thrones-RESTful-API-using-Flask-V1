@@ -24,3 +24,5 @@ Authlib
 flask-bcrypt
 flask_jwt_extended
 pytest
+pytest-cov
+pytest-xdist

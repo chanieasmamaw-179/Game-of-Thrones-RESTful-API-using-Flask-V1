@@ -42,7 +42,7 @@ dotenv.load_dotenv()
 migrate = Migrate(app, db)
 
 # Access environment variables
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///./sqlite_database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
 
@@ -133,7 +133,6 @@ def get_character_by_id(args, character_id):
 def filter_characters(args):
     """Filter characters based on name, house, role, and age range."""
     try:
-        app.logger.info(f"Filter arguments: {args}")
         filtered_characters = Character.query
 
         if args.get('name'):
@@ -150,12 +149,11 @@ def filter_characters(args):
         filtered_characters = filtered_characters.all()
 
         if not filtered_characters:
-            return jsonify({"total": 0, "data": []}), 200
+            return jsonify({"error": "No characters found matching the given filters."}), 404
 
         return jsonify({"total": len(filtered_characters), "data": [character.to_dict() for character in filtered_characters]})
     except Exception as e:
         return handle_generic_error(e)
-
 
 # Feature 4: Fetch a sorted character list
 @app.route("/characters-sort", methods=["POST"])
@@ -242,9 +240,7 @@ def delete_character(args, character_id):
     except Exception as e:
         return handle_generic_error(e)
 
-
 # Run the app and Initialize the database before starting the app
-
 if __name__ == "__main__":
     with app.app_context():
         Base.metadata.create_all(bind=engine)

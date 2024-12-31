@@ -1,127 +1,156 @@
-Flask Game of Thrones API
+Game of Thrones Flask API
+Overview
 
-This project is a Flask-based RESTful API designed to manage and retrieve information about characters from the fictional world of Game of Thrones. It features endpoints for listing, filtering, sorting, creating, updating, and deleting character records.
+This project is a RESTful API built using Python and Flask that performs CRUD operations on a list of characters from the Game of Thrones universe. Initially, a mock database represented by a Python list was used, but the app has now been migrated to use a PostgreSQL database. The API provides several functionalities, including listing characters with pagination, retrieving specific character details, and filtering or sorting characters based on various criteria.
 Features
 
-    Fetch All Characters with Pagination
-    Retrieve a paginated list of all characters.
-    Endpoint: /list-characters
-    Method: GET
+    Fetch all characters with Pagination
+    Endpoint: GET /list-characters
+    Supports pagination and returns a list of characters.
 
-    Fetch Character by ID
-    Retrieve detailed information about a specific character.
-    Endpoint: /get-characters-id/<int:character_id>
-    Method: GET
+    Fetch a specific character by ID
+    Endpoint: GET /get-characters-id/<int:character_id>
+    Retrieves details of a character by their ID, with optional inclusion of house and role.
 
-    Filter Characters
-    Retrieve a filtered list of characters based on query parameters (e.g., name, house, role, age range).
-    Endpoint: /filter-characters
-    Method: GET
+    Filter characters by name, house, role, or age range
+    Endpoint: GET /filter-characters
+    Allows filtering of characters based on various attributes like name, house, role, and age range.
 
-    Sort Characters
-    Sort characters by name, age, or house in ascending or descending order.
-    Endpoint: /characters-sort
-    Method: POST
+    Sort characters by a specified field
+    Endpoint: POST /characters-sort
+    Sorts characters based on a specific field (e.g., name, age) in either ascending or descending order.
 
-    Filter and Sort Combined
-    Combine filtering and sorting functionality in one request.
-    Endpoint: /characters-filter-and-sort-combin
-    Method: POST
+    Create a new character
+    Endpoint: POST /add/create-new-characters
+    Allows adding new characters to the database.
 
-    Add a New Character
-    Create a new character record with a unique ID.
-    Endpoint: /add/create-new-characters
-    Method: POST
+    Update an existing character
+    Endpoint: PUT /update-character/<int:character_id>
+    Allows updating the details of an existing character by their ID.
 
-    Update an Existing Character
-    Modify the details of an existing character by ID.
-    Endpoint: /Edit-characters/<int:character_id>
-    Method: PUT
+    Delete a character by ID
+    Endpoint: DELETE /delete-characters/<int:character_id>
+    Deletes a character from the database by their ID.
 
-    Delete a Character
-    Remove a character record by ID.
-    Endpoint: /delete-characters/<int:character_id>
-    Method: DELETE
+Requirements
 
-Installation and Setup
+To set up and run this API, you need to install the following Python packages:
+---------------------------------------------------------------------------------------------------------
+Flask>=3.0.0  
+flask_migrate  
+flask-restful  
+flask-paginate  
+SQLAlchemy  
+psycopg2-binary  
+requests  
+jsonify  
+pydantic  
+sqlalchemy  
+flask_sqlalchemy  
+flask-swagger-ui  
+mysqlclient  
+python-dotenv  
+apifairy==0.9.0  
+passlib  
+PyJWT  
+pymysql  
+alembic  
+python-dotenv  
+marshmallow-sqlalchemy  
+flask_restx  
+Authlib  
+flask-bcrypt  
+flask_jwt_extended  
+pytest  
+pytest-cov  
+pytest-xdist
+---------------------------------------------------------------------------------------------------------
+1. Installation and Setup
 
-    Clone the Repository:
+    Clone the repository
+    Clone the repository to your local machine:
+git clone https://github.com/chanieasmamaw-179/Game-of-Thrones-RESTful-API-using-Flask-V1
+cd https://github.com/chanieasmamaw-179/Game-of-Thrones-RESTful-API-using-Flask-V1
 
-git clone <repository_url>
-cd flask_got_api
-
-Set Up Virtual Environment:
-
-python3 -m venv venv
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-
-Install Dependencies:
-
+2. Install dependencies
+Install the required dependencies from the requirements.txt file:
 pip install -r requirements.txt
 
-Run the Application:
+3. Set up environment variables
+Create a .env file in the root of the project directory and configure the following variables: 
 
-    python app.py
+DATABASE_URL=your_database_connection_string
+FLASK_APP=app.py
+FLASK_ENV=development
+4. Run the Flask app
+To start the Flask application, run the following command:
+python app.py
+The app will be available at http://localhost:8087.
 
-    The application will be accessible at http://localhost:8087.
+## Testing Setup
 
-API Documentation
-Query Parameters
+To run tests, install pytest and other testing dependencies by running:
+- pip install pytest pytest-cov pytest-xdist
 
-    limit: Number of results per page (default: 20).
-    skip: Number of results to skip (default: 0).
+Running Tests:
 
-Request Body Parameters
+To run the tests, execute the following command:
+pytest
+    To see test coverage, use:
+- pytest --cov=app
 
-Create/Update Character
+You can also specify a particular test file to run:
 
-{
-    "name": "string",
-    "house": "string",
-    "role": "string",
-    "age": "integer"
-}
+- pytest test_app.py
 
-Filter Parameters
+## API Documentation
 
-{
-    "name": "string",
-    "house": "string",
-    "role": "string",
-    "age_min": "integer",
-    "age_max": "integer",
-    "sort_by": "string",
-    "sort_order": "asc|desc"
-}
+The API provides interactive documentation via Swagger UI. After running the app, you can access the documentation at:
+http://192.168.171.163:8087/docs#
 
-Development Tools
-Dependencies
 
-    Flask: Python web framework.
-    APIFairy: API documentation generation.
-    Marshmallow: Input validation.
-    Flask-SQLAlchemy: SQLAlchemy integration for Flask.
-    Flask-Swagger-UI: API UI for Swagger.
-    passlib: Password hashing.
-    PyJWT: JSON Web Token (JWT) authentication.
-    psycopg2-binary: PostgreSQL database adapter.
-    pydantic: Data validation.
-    python-dotenv: Load environment variables from a .env file.
+## Database Setup
 
-Configuration
+This app uses PostgreSQL as its database. To set up the database:
 
-    Debugging is enabled in development mode.
-    API UI is available at /swagger-ui.
+    Ensure that you have PostgreSQL installed and running.
+    Configure your PostgreSQL database connection URL in the .env file.
+    Run database migrations to set up the schema:
+- flask db upgrade
+## Error Handling
 
-Database
+The application handles different types of errors gracefully:
 
-This application uses PostgreSQL as its database.
+    500 Internal Server Error: A generic error handler for unexpected issues.
+    400 Bad Request: Validation errors are returned with details.
+    404 Not Found: Returned if the requested character does not exist.
+
+## Folder Structure
+The folder structure of the project is as follows:
+------------------------------------------------------------------------------------------------------
+app/
+│-- __init__.py
+│-- app.py                   # Main application file
+│-- config/
+│   ├-- database.py          # Database configuration
+│   └-- dependancy.py        # Database initialization and app configurations
+│-- models/
+│   ├-- __init__.py
+│   ├-- model_tables.py      # Models (e.g., Character)
+│   └-- base.py              # Base model class for SQLAlchemy
+│-- routers/
+│   └-- auth.py              # Authentication routes
+│-- schemas/
+│   └-- schema.py            # Marshmallow schemas for data validation
+│-- test_app.py              # Unit tests
+│-- requirements.txt         # Project dependencies
+│-- .env                     # Environment variables
+------------------------------------------------------------------------------------------------------
+
 License
 
-This project is licensed under the webeet.io. License.
-Author
+This project is licensed under the webeet.io Job Application Mock Interview.
 
-Asmamaw Chanie Yehun
-Junior Backend Software Engineer
+Author: Asmamaw Chanie Yehun, PhD, Backend Software Developer
 Email: chanieasmamaw@yahoo.com
-Phone: +4917625315666
+Phone: +49 176 25315666

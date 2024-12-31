@@ -104,10 +104,17 @@ class FilterCharactersQuerySchema(Schema):
     role = fields.Str(required=False, description="Filter by character's role.")
     age_min = fields.Int(required=False, description="Filter by minimum age.")
     age_max = fields.Int(required=False, description="Filter by maximum age.")
-    include_age = fields.Bool(required=False, description="Whether to include age filtering.")
-    sort_by = fields.Str(required=False, description="Attribute to sort by (e.g., name, age).")
-    sort_order = fields.Str(required=False, validate=lambda x: x in ['asc', 'desc'],
-                            description="Sort order ('asc' or 'desc').")
+    sort_by = fields.Str(
+        required=False,
+        missing='name',
+        description="Attribute to sort by (e.g., name, age). Default is 'name'."
+    )
+    sort_order = fields.Str(
+        required=False,
+        validate=validate.OneOf(['asc', 'desc']),
+        missing='asc',
+        description="Sort order ('asc' or 'desc'). Default is 'asc'."
+    )
 
 
 class SortRequestSchema(Schema):
