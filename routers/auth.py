@@ -1,3 +1,7 @@
+"""
+User authentications and authorization
+"""
+
 # Standard library imports
 import logging
 import os

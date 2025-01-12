@@ -1,5 +1,5 @@
 """
-This app is a RESTful API built using Python and Flask. It performs CRUD operations on a Python list,
+RESTful API built using Python and Flask. It performs CRUD operations on a Python list,
 which initially serves as a mock database representing characters from Game of Thrones.
 The app is later migrated to use a PostgreSQL database.
 """
@@ -13,9 +13,6 @@ from flask_migrate import Migrate
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from apifairy import APIFairy, arguments, authenticate
-#from flask_httpauth import HTTPBasicAuth
-#from routers.auth import authenticate
-# Local application imports: Modules from your project.
 from config.database import db, engine, Base
 from config.dependancy import init_db
 from models.model_tables import Character
@@ -32,6 +29,7 @@ from schemas.schema import (
 
 # Initialize Flask app
 app = Flask(__name__)
+app.name = "characters"
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -67,7 +65,9 @@ db.init_app(app)
 app.register_blueprint(auth_blueprint)
 
 
-# Initialization the authorizations
+# Create a Blueprint with a prefix for characters
+characters_blueprint = Blueprint("characters", __name__, url_prefix="/characters")
+
 
 
 # Error Handlers
@@ -95,10 +95,9 @@ def handle_404_error(e):
 def home():
     """Home route of the Game of Thrones Flask API."""
     return "Welcome to the Game of Thrones Flask API!"
-
 # Feature 1: Fetch all characters with Pagination
 
-@app.route("/list-characters", methods=["GET"])
+@characters_blueprint.route("/list-characters", methods=["GET"])
 @authenticate(auth)
 @arguments(CharacterSchema)
 def get_characters(args):
@@ -117,7 +116,7 @@ def get_characters(args):
         return handle_generic_error(e)
 
 # Feature 2: Fetch a specific character by ID
-@app.route("/get-characters-id/<int:character_id>", methods=["GET"])
+@characters_blueprint.route("/get-characters-id/<int:character_id>", methods=["GET"])
 @authenticate(auth)
 @arguments(GetCharacterSchema)
 def get_character_by_id(args, character_id):
@@ -138,7 +137,7 @@ def get_character_by_id(args, character_id):
         return handle_generic_error(e)
 
 # Feature 3: Fetch a filtered character list
-@app.route("/filter-characters", methods=["GET"])
+@characters_blueprint.route("/filter-characters", methods=["GET"])
 @authenticate(auth)
 @arguments(FilterCharactersQuerySchema)
 def filter_characters(args):
@@ -169,7 +168,7 @@ def filter_characters(args):
 
 
 # Feature 4: Fetch a sorted character list
-@app.route("/characters-sort", methods=["POST"])
+@characters_blueprint.route("/characters-sort", methods=["POST"])
 @authenticate(auth)
 @arguments(SortRequestSchema)
 def sort_characters(args):
@@ -198,7 +197,7 @@ def sort_characters(args):
         return handle_generic_error(e)
 
 # Feature 5: Add a new character to the list
-@app.route("/add/create-new-characters", methods=["POST"])
+@characters_blueprint.route("/add/create-new-characters", methods=["POST"])
 @authenticate(auth)
 @arguments(UserSchema)
 def create_character(args):
@@ -215,7 +214,7 @@ def create_character(args):
         return handle_generic_error(e)
 
 # Feature 6: Edit a character
-@app.route("/update-character/<int:character_id>", methods=["PUT"])
+@characters_blueprint.route("/update-character/<int:character_id>", methods=["PUT"])
 @authenticate(auth)
 @arguments(UserSchema)
 def update_character(args, character_id):
@@ -238,7 +237,7 @@ def update_character(args, character_id):
         return handle_generic_error(e)
 
 # Feature 7: Delete a character
-@app.route("/delete-characters/<int:character_id>", methods=["DELETE"])
+@characters_blueprint.route("/delete-characters/<int:character_id>", methods=["DELETE"])
 @authenticate(auth)
 @arguments(UserSchemaDeletion, location="query")
 def delete_character(args, character_id):
@@ -256,6 +255,9 @@ def delete_character(args, character_id):
         return handle_database_error(e)
     except Exception as e:
         return handle_generic_error(e)
+
+# Register the Blueprint
+app.register_blueprint(characters_blueprint)
 
 
 # Run the app and Initialize the database before starting the app
