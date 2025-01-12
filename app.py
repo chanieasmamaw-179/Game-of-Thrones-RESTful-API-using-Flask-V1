@@ -12,13 +12,15 @@ from flask import Flask, jsonify, Blueprint, request
 from flask_migrate import Migrate
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from apifairy import APIFairy, arguments
+from apifairy import APIFairy, arguments, authenticate
+#from flask_httpauth import HTTPBasicAuth
+#from routers.auth import authenticate
 # Local application imports: Modules from your project.
 from config.database import db, engine, Base
 from config.dependancy import init_db
 from models.model_tables import Character
 from models.base import Base
-from routers.auth import auth_blueprint
+from routers.auth import auth_blueprint, auth
 from schemas.schema import (
     CharacterSchema,
     GetCharacterSchema,
@@ -60,8 +62,13 @@ init_db(app)
 # Initialize database connection with SQLAlchemy
 db.init_app(app)
 
+
 # Register the Blueprint for authentication
 app.register_blueprint(auth_blueprint)
+
+
+# Initialization the authorizations
+
 
 # Error Handlers
 @app.errorhandler(Exception)
@@ -90,7 +97,9 @@ def home():
     return "Welcome to the Game of Thrones Flask API!"
 
 # Feature 1: Fetch all characters with Pagination
+
 @app.route("/list-characters", methods=["GET"])
+@authenticate(auth)
 @arguments(CharacterSchema)
 def get_characters(args):
     """Retrieve a list of characters with pagination from the Game of Thrones API."""
@@ -109,6 +118,7 @@ def get_characters(args):
 
 # Feature 2: Fetch a specific character by ID
 @app.route("/get-characters-id/<int:character_id>", methods=["GET"])
+@authenticate(auth)
 @arguments(GetCharacterSchema)
 def get_character_by_id(args, character_id):
     """Retrieve a character by ID, optionally including house and role details."""
@@ -129,6 +139,7 @@ def get_character_by_id(args, character_id):
 
 # Feature 3: Fetch a filtered character list
 @app.route("/filter-characters", methods=["GET"])
+@authenticate(auth)
 @arguments(FilterCharactersQuerySchema)
 def filter_characters(args):
     """Filter characters based on name, house, role, and age range."""
@@ -159,6 +170,7 @@ def filter_characters(args):
 
 # Feature 4: Fetch a sorted character list
 @app.route("/characters-sort", methods=["POST"])
+@authenticate(auth)
 @arguments(SortRequestSchema)
 def sort_characters(args):
     """Sort characters based on a specified field and order (ascending/descending)."""
@@ -187,6 +199,7 @@ def sort_characters(args):
 
 # Feature 5: Add a new character to the list
 @app.route("/add/create-new-characters", methods=["POST"])
+@authenticate(auth)
 @arguments(UserSchema)
 def create_character(args):
     """Create a new character and save it to the database."""
@@ -203,6 +216,7 @@ def create_character(args):
 
 # Feature 6: Edit a character
 @app.route("/update-character/<int:character_id>", methods=["PUT"])
+@authenticate(auth)
 @arguments(UserSchema)
 def update_character(args, character_id):
     """Update an existing character's details in the database."""
@@ -225,6 +239,7 @@ def update_character(args, character_id):
 
 # Feature 7: Delete a character
 @app.route("/delete-characters/<int:character_id>", methods=["DELETE"])
+@authenticate(auth)
 @arguments(UserSchemaDeletion, location="query")
 def delete_character(args, character_id):
     """Delete a character from the database by its ID."""

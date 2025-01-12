@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 # Flask imports for handling routes and requests
 from flask import Blueprint, request, jsonify
 # Third-party imports
-from apifairy import arguments
+from apifairy import arguments, authenticate
+from flask_httpauth import HTTPBasicAuth
 from passlib.context import CryptContext
 import jwt
 from sqlalchemy.exc import IntegrityError
@@ -25,6 +26,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_key")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 180))
 
+auth = HTTPBasicAuth()
+
 # Security settings
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -37,6 +40,7 @@ def create_access_token(data, expires_delta=None):
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 
 @auth_blueprint.route('/auth/register', methods=['POST'])
@@ -77,3 +81,16 @@ def login(args):
 
     access_token = create_access_token({"sub": user.id})
     return jsonify({"access_token": access_token, "token_type": "bearer"}), 200
+
+@auth.verify_password
+def verify_password(username, password):
+    user = User.query.filter_by(email=username).first()
+    if user and bcrypt_context.verify(password, user.password):
+        return user
+    return None
+
+
+
+
+
+
