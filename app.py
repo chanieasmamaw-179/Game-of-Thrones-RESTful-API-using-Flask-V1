@@ -74,12 +74,12 @@ characters_blueprint = Blueprint("characters", __name__, url_prefix="/characters
 @app.errorhandler(Exception)
 def handle_generic_error(e):
     logger.error(f"Unexpected Error: {str(e)}")
-    return jsonify({"error": "An unexpected error occurred", "message": str(e)}), 500
+    return jsonify({"error": "An unexpected error occurred", "message": str(e)}), 500 # Server side error
 
 @app.errorhandler(ValidationError)
 def handle_validation_error(e):
     logger.warning(f"Validation Error: {e.messages}")
-    return jsonify({"error": "Validation Error", "details": e.messages}), 400
+    return jsonify({"error": "Validation Error", "details": e.messages}), 400  # Bad request
 
 @app.errorhandler(SQLAlchemyError)
 def handle_database_error(e):
@@ -88,7 +88,7 @@ def handle_database_error(e):
 
 @app.errorhandler(404)
 def handle_404_error(e):
-    return jsonify({"error": "Resource Not Found"}), 404
+    return jsonify({"error": "Resource Not Found"}), 404 # Not found error
 
 # Default home route
 @app.route("/")
