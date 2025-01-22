@@ -98,6 +98,8 @@ To run the tests, execute the following command:
 pytest
     To see test coverage, use:
 - pytest --cov=app
+or
+-  pytest --cov=app -v --disable-warnings   # it removes the warning isues
 
 You can also specify a particular test file to run:
 
